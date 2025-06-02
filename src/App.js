@@ -22,9 +22,10 @@ function Logo() {
 
 function Form() {
   return (
-    <div className="add-form">
+    <form className="add-form">
       <h3>input, selection box etc</h3>
-    </div>
+      <input type="text" placeholder="Item..." />
+    </form>
   );
 }
 
@@ -48,7 +49,7 @@ function Item({ item }) {
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>&times;</button>
+      <button>❌</button>
     </li>
   );
 }
