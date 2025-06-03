@@ -31,7 +31,8 @@ function Form() {
 
     if (!description) return;
 
-    const newItem = { description, quantity, package: false, id: Date.now() };
+    const newItem = { description, quantity, packed: false, id: Date.now() };
+    console.log(newItem);
 
     setDescription("");
     setQuantity(1);
@@ -50,7 +51,7 @@ function Form() {
         type="text"
         placeholder="Item..."
         value={description}
-        onChange={(e) => setDescription(Number(e.target.value))}
+        onChange={(e) => setDescription(e.target.value)}
       />
       <button>Add</button>
     </form>
@@ -61,11 +62,9 @@ function PackingList() {
   return (
     <div className="list">
       <ul>
-        <li>
-          {initialItems.map((item) => (
-            <Item item={item} key={item.id} />
-          ))}
-        </li>
+        {initialItems.map((item) => (
+          <Item item={item} key={item.id} />
+        ))}
       </ul>
     </div>
   );
