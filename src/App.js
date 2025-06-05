@@ -6,18 +6,34 @@ const initialItems = [
   { id: 3, description: "Meat", quantity: 1, packed: false },
 ];
 
-export default function App() {
+/*export default function App() {
   const [items, setItems] = useState([]);
 
   function handleAddNewItems(item) {
     setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((items) => items.id !== id));
+  }
+
+  function handleToggleItems(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
   }
   return (
     <div className="app">
       all the app
       <Logo />
       <Form onAddItems={handleAddNewItems} />
-      <PackingList items={items} />
+      <PackingList
+        items={items}
+        onDeleteItems={handleDeleteItem}
+        onToggleItems={handleToggleItems}
+      />
       <Stats />
     </div>
   );
@@ -65,25 +81,35 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items }) {
+function PackingList({ items, onDeleteItems, onToggleItems }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} />
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItems={onDeleteItems}
+            onToggleItems={onToggleItems}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ item }) {
+function Item({ item, onDeleteItems, onToggleItems }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => onToggleItems(item.id)}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItems(item.id)}>❌</button>
     </li>
   );
 }
@@ -92,6 +118,122 @@ function Stats() {
   return (
     <footer className="stats">
       <em>You have X item on your list, and you already carted X (%X)</em>
+    </footer>
+  );
+}
+*/
+
+/*1. Create the default App function and <something /> inside it
+export default function App() {
+  return (
+    <div className="app">
+      <Logo />
+      <Form />
+      <PackingList />
+      <Stats />
+    </div>
+  );
+}*/
+export default function App() {
+  return (
+    <div className="app">
+      <Logo />
+      <Form />
+      <PackingList />
+      <Stats />
+    </div>
+  );
+}
+
+/*This is a logo function
+ */
+function Logo() {
+  return <h1>Item List Note</h1>;
+}
+
+/* 1. create default Form function with placeholder
+    
+function Form() {
+  return (
+    <form className="add-form">
+      <h3>What do you want to buy?</h3>
+    </form>
+  );
+}
+*/
+function Form() {
+  return (
+    <form className="add-form">
+      <h3>What do you want to buy?</h3>
+
+      {/* 1. Select is a selection dropdown
+          2. breakdown using array methon so user can adjust the selection length
+      */}
+      <select>
+        {/*Array.from({ length: 20 }, (_, i) => i + 1) is creating an array of number 1-20
+            
+            .map((num) => (
+          <option value={num} key={num}>
+            {num}
+          </option>
+            ^for each number, return <option>num</option> that:
+             - value={num} Sets the value of the option (used internally when an option is selected).
+             - key={num} A unique identifier React uses to keep track of elements efficiently during re-rendering.
+        */}
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+          <option value={num} key={num}>
+            {num}
+          </option>
+        ))}
+      </select>
+
+      {/*Input is a textbox that user can type something*/}
+      <input type="text" placeholder="Item..." />
+
+      {/*Button just a button*/}
+      <button>Add</button>
+    </form>
+  );
+}
+
+/* 1. create default packinglist function
+ */
+function PackingList() {
+  return (
+    <div className="list">
+      <ul>
+        {/*breakdown the array object into item, the {item} is prop that passed into Item component*/}
+        {initialItems.map((item) => (
+          <Item item={item} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* 1. create Item component with passed props
+ */
+function Item({ item }) {
+  return (
+    <li>
+      {/*create an if logic to line through the listed item if already packed*/}
+      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
+        {/*props.what based on the object*/}
+        {item.quantity} {item.description}
+      </span>
+      <button>❌</button>
+    </li>
+  );
+}
+
+/*1. create defaul footer with placeholder
+ */
+function Stats() {
+  return (
+    <footer className="stats">
+      <em>
+        You have X item(s) on the list, and you have already packed X (X%)
+      </em>
     </footer>
   );
 }
