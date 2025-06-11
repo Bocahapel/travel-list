@@ -162,14 +162,43 @@ function Form() {
 }
 */
 function Form() {
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [items, setItems] = useState([]);
+
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  /*this is an event handler*/
+  function handleSubmit(event) {
+    //this will stop the 1 page app reloading everytime user submit something
+    event.preventDefault();
+
+    //if no new item input, i won't save anything
+    if (!description) return;
+
+    //save the new input into newItem
+    const newItem = { quantity, description, packed: false, id: Date.now() };
+    console.log(newItem);
+
+    handleAddItems(newItem);
+
+    setDescription("");
+    setQuantity(1);
+  }
+
   return (
-    <form className="add-form">
+    <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you want to buy?</h3>
 
       {/* 1. Select is a selection dropdown
           2. breakdown using array methon so user can adjust the selection length
       */}
-      <select>
+      <select
+        value={quantity}
+        onChange={(e) => setQuantity(Number(e.target.value))}
+      >
         {/*Array.from({ length: 20 }, (_, i) => i + 1) is creating an array of number 1-20
             
             .map((num) => (
@@ -188,7 +217,13 @@ function Form() {
       </select>
 
       {/*Input is a textbox that user can type something*/}
-      <input type="text" placeholder="Item..." />
+      <input
+        type="text"
+        placeholder="Item..."
+        //the input will be saved and showed on page
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
       {/*Button just a button*/}
       <button>Add</button>
@@ -204,7 +239,7 @@ function PackingList() {
       <ul>
         {/*breakdown the array object into item, the {item} is prop that passed into Item component*/}
         {initialItems.map((item) => (
-          <Item item={item} />
+          <Item item={item} key={item.id} />
         ))}
       </ul>
     </div>
@@ -212,6 +247,7 @@ function PackingList() {
 }
 
 /* 1. create Item component with passed props
+   2. the {item} must have the same name with item from <Item item={item}/>
  */
 function Item({ item }) {
   return (
