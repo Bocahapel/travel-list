@@ -135,11 +135,23 @@ export default function App() {
   );
 }*/
 export default function App() {
+  //uplifting the items state to the common parent of form and packing list function
+  const [items, setItems] = useState([]);
+
+  //this function will create and merge the new input with the existing items array
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItems={handleAddItems} />
+      <PackingList items={items} onDeleteItems={handleDeleteItem} />
       <Stats />
     </div>
   );
@@ -161,14 +173,9 @@ function Form() {
   );
 }
 */
-function Form() {
+function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [items, setItems] = useState([]);
-
-  function handleAddItems(item) {
-    setItems((items) => [...items, item]);
-  }
 
   /*this is an event handler*/
   function handleSubmit(event) {
@@ -182,7 +189,7 @@ function Form() {
     const newItem = { quantity, description, packed: false, id: Date.now() };
     console.log(newItem);
 
-    handleAddItems(newItem);
+    onAddItems(newItem);
 
     setDescription("");
     setQuantity(1);
@@ -232,14 +239,16 @@ function Form() {
 }
 
 /* 1. create default packinglist function
+
+the onDeleteItems is from APP then we need to passing this to ITEM function inside PACKINGLIST
  */
-function PackingList() {
+function PackingList({ items, onDeleteItems }) {
   return (
     <div className="list">
       <ul>
         {/*breakdown the array object into item, the {item} is prop that passed into Item component*/}
-        {initialItems.map((item) => (
-          <Item item={item} key={item.id} />
+        {items.map((item) => (
+          <Item item={item} onDeleteItems={onDeleteItems} key={item.id} />
         ))}
       </ul>
     </div>
@@ -249,7 +258,7 @@ function PackingList() {
 /* 1. create Item component with passed props
    2. the {item} must have the same name with item from <Item item={item}/>
  */
-function Item({ item }) {
+function Item({ item, onDeleteItems }) {
   return (
     <li>
       {/*create an if logic to line through the listed item if already packed*/}
@@ -257,7 +266,7 @@ function Item({ item }) {
         {/*props.what based on the object*/}
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItems(item.id)}>❌</button>
     </li>
   );
 }
