@@ -147,11 +147,23 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList items={items} onDeleteItems={handleDeleteItem} />
+      <PackingList
+        items={items}
+        onDeleteItems={handleDeleteItem}
+        onToggleItems={handleToggleItem}
+      />
       <Stats />
     </div>
   );
@@ -242,13 +254,18 @@ function Form({ onAddItems }) {
 
 the onDeleteItems is from APP then we need to passing this to ITEM function inside PACKINGLIST
  */
-function PackingList({ items, onDeleteItems }) {
+function PackingList({ items, onDeleteItems, onToggleItems }) {
   return (
     <div className="list">
       <ul>
         {/*breakdown the array object into item, the {item} is prop that passed into Item component*/}
         {items.map((item) => (
-          <Item item={item} onDeleteItems={onDeleteItems} key={item.id} />
+          <Item
+            item={item}
+            onDeleteItems={onDeleteItems}
+            onToggleItems={onToggleItems}
+            key={item.id}
+          />
         ))}
       </ul>
     </div>
@@ -258,9 +275,15 @@ function PackingList({ items, onDeleteItems }) {
 /* 1. create Item component with passed props
    2. the {item} must have the same name with item from <Item item={item}/>
  */
-function Item({ item, onDeleteItems }) {
+function Item({ item, onDeleteItems, onToggleItems }) {
   return (
     <li>
+      {/*creating checkbox input*/}
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => onToggleItems(item.id)}
+      />
       {/*create an if logic to line through the listed item if already packed*/}
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {/*props.what based on the object*/}
