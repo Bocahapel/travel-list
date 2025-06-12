@@ -164,7 +164,7 @@ export default function App() {
         onDeleteItems={handleDeleteItem}
         onToggleItems={handleToggleItem}
       />
-      <Stats />
+      <Stats items={items} />
     </div>
   );
 }
@@ -255,6 +255,7 @@ function Form({ onAddItems }) {
 the onDeleteItems is from APP then we need to passing this to ITEM function inside PACKINGLIST
  */
 function PackingList({ items, onDeleteItems, onToggleItems }) {
+  const [sortBy, setSortBy] = useState("input");
   return (
     <div className="list">
       <ul>
@@ -268,6 +269,13 @@ function PackingList({ items, onDeleteItems, onToggleItems }) {
           />
         ))}
       </ul>
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by Input</option>
+          <option value="description">Sort by Description</option>
+          <option value="packed">Sort by Pack Status</option>
+        </select>
+      </div>
     </div>
   );
 }
@@ -296,11 +304,26 @@ function Item({ item, onDeleteItems, onToggleItems }) {
 
 /*1. create defaul footer with placeholder
  */
-function Stats() {
+function Stats({ items }) {
+  if (!items.length)
+    return (
+      <footer className="stats">
+        <p>
+          <em>Start Add Something</em>
+        </p>
+      </footer>
+    );
+
+  const numItems = items.length;
+  const numPacked = items.filter((item) => item.packed).length;
+  const numPercentage = Math.round((numPacked / numItems) * 100);
+
   return (
     <footer className="stats">
       <em>
-        You have X item(s) on the list, and you have already packed X (X%)
+        {numPercentage === 100
+          ? "You got everything on the list"
+          : `You have ${numItems} item(s) on the list, and you have already packed ${numPacked} (${numPercentage}%)`}
       </em>
     </footer>
   );
