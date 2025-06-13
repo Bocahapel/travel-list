@@ -1,4 +1,8 @@
 import { useState } from "react";
+import Logo from "./Logo";
+import Form from "./Form";
+import PackingList from "./PackingList";
+import Stats from "./Stats";
 
 const initialItems = [
   { id: 1, description: "Vegetable", quantity: 1, packed: false },
@@ -155,6 +159,14 @@ export default function App() {
     );
   }
 
+  function handleEmptyArray() {
+    const confirmDelete = window.confirm("Are you sure to clear the list?");
+
+    if (confirmDelete) {
+      setItems([]);
+    }
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -163,168 +175,9 @@ export default function App() {
         items={items}
         onDeleteItems={handleDeleteItem}
         onToggleItems={handleToggleItem}
+        onClearItems={handleEmptyArray}
       />
       <Stats items={items} />
     </div>
-  );
-}
-
-/*This is a logo function
- */
-function Logo() {
-  return <h1>Item List Note</h1>;
-}
-
-/* 1. create default Form function with placeholder
-    
-function Form() {
-  return (
-    <form className="add-form">
-      <h3>What do you want to buy?</h3>
-    </form>
-  );
-}
-*/
-function Form({ onAddItems }) {
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  /*this is an event handler*/
-  function handleSubmit(event) {
-    //this will stop the 1 page app reloading everytime user submit something
-    event.preventDefault();
-
-    //if no new item input, i won't save anything
-    if (!description) return;
-
-    //save the new input into newItem
-    const newItem = { quantity, description, packed: false, id: Date.now() };
-    console.log(newItem);
-
-    onAddItems(newItem);
-
-    setDescription("");
-    setQuantity(1);
-  }
-
-  return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you want to buy?</h3>
-
-      {/* 1. Select is a selection dropdown
-          2. breakdown using array methon so user can adjust the selection length
-      */}
-      <select
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-      >
-        {/*Array.from({ length: 20 }, (_, i) => i + 1) is creating an array of number 1-20
-            
-            .map((num) => (
-          <option value={num} key={num}>
-            {num}
-          </option>
-            ^for each number, return <option>num</option> that:
-             - value={num} Sets the value of the option (used internally when an option is selected).
-             - key={num} A unique identifier React uses to keep track of elements efficiently during re-rendering.
-        */}
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-          <option value={num} key={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-
-      {/*Input is a textbox that user can type something*/}
-      <input
-        type="text"
-        placeholder="Item..."
-        //the input will be saved and showed on page
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      {/*Button just a button*/}
-      <button>Add</button>
-    </form>
-  );
-}
-
-/* 1. create default packinglist function
-
-the onDeleteItems is from APP then we need to passing this to ITEM function inside PACKINGLIST
- */
-function PackingList({ items, onDeleteItems, onToggleItems }) {
-  const [sortBy, setSortBy] = useState("input");
-  return (
-    <div className="list">
-      <ul>
-        {/*breakdown the array object into item, the {item} is prop that passed into Item component*/}
-        {items.map((item) => (
-          <Item
-            item={item}
-            onDeleteItems={onDeleteItems}
-            onToggleItems={onToggleItems}
-            key={item.id}
-          />
-        ))}
-      </ul>
-      <div className="actions">
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by Input</option>
-          <option value="description">Sort by Description</option>
-          <option value="packed">Sort by Pack Status</option>
-        </select>
-      </div>
-    </div>
-  );
-}
-
-/* 1. create Item component with passed props
-   2. the {item} must have the same name with item from <Item item={item}/>
- */
-function Item({ item, onDeleteItems, onToggleItems }) {
-  return (
-    <li>
-      {/*creating checkbox input*/}
-      <input
-        type="checkbox"
-        value={item.packed}
-        onChange={() => onToggleItems(item.id)}
-      />
-      {/*create an if logic to line through the listed item if already packed*/}
-      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {/*props.what based on the object*/}
-        {item.quantity} {item.description}
-      </span>
-      <button onClick={() => onDeleteItems(item.id)}>❌</button>
-    </li>
-  );
-}
-
-/*1. create defaul footer with placeholder
- */
-function Stats({ items }) {
-  if (!items.length)
-    return (
-      <footer className="stats">
-        <p>
-          <em>Start Add Something</em>
-        </p>
-      </footer>
-    );
-
-  const numItems = items.length;
-  const numPacked = items.filter((item) => item.packed).length;
-  const numPercentage = Math.round((numPacked / numItems) * 100);
-
-  return (
-    <footer className="stats">
-      <em>
-        {numPercentage === 100
-          ? "You got everything on the list"
-          : `You have ${numItems} item(s) on the list, and you have already packed ${numPacked} (${numPercentage}%)`}
-      </em>
-    </footer>
   );
 }
